@@ -5,7 +5,7 @@ __precompile__(true)
 """
     DensityInterface
 
-Template for Julia packages.
+Trait-based interface for mathematical/statistical densities
 """
 module DensityInterface
 
