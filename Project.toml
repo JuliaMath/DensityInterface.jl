@@ -1,6 +1,6 @@
 name = "DensityInterface"
 uuid = "b429d917-457f-4dbc-8f4c-0cc954292b1d"
-version = "0.1.0"
+version = "0.2.0"
 
 [compat]
 julia = "1"
