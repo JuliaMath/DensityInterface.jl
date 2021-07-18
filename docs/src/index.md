@@ -1,13 +1,13 @@
 # DensityInterface.jl
 
-This package defines an interface for mathematical/statistical densities in Julia. The interface comprises the functions [`isdensity`](@ref),  [`logdensityof`](@ref) and [`logfuncdensity`](@ref).
+This package defines an interface for mathematical/statistical densities in Julia. The interface comprises the functions [`isdensitytype`](@ref),  [`logdensityof`](@ref) and [`logfuncdensity`](@ref).
 
 A the following methods must be provided to make a type (e.g. `SomeDensity`) compatible with the interface:
 
 ```julia
 import DensityInterface
 
-DensityInterface.isdensity(::SomeDensity) = true
+DensityInterface.isdensitytype(::Type{<:SomeType}) = true
 DensityInterface.logdensityof(density::SomeDensity, x) = log_of_density_at_x
 ```
 

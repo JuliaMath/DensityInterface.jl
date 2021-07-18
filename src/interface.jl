@@ -2,18 +2,18 @@
 
 
 """
-    isdensity(obj::Any)
+    isdensitytype(type::Type)
 
-Returns `true` if `obj` is compatible with the `DensityInterface` interface,
+Returns `true` if `type` is compatible with the `DensityInterface` interface,
 otherwise returns `false` by default.
 """
-function isdensity end
-export isdensity
+function isdensitytype end
+export isdensitytype
 
-@inline isdensity(obj::Any) = false
+@inline isdensitytype(::Type) = false
 
-function check_if_density(obj)
-    isdensity(obj) || throw("Object of type $(typeof(obj)) is not a DensityInterface-compatible density")
+function check_if_densitytype(type::Type)
+    isdensitytype(type) || throw("Type $(type) is not compatible with DensityInterface")
 end
 
 
@@ -51,7 +51,7 @@ function logdensityof end
 export logdensityof
 
 function logdensityof(density)
-    check_if_density(density)
+    check_if_densitytype(typeof(density))
     LogDensityOf(density)
 end
 
@@ -117,7 +117,7 @@ struct LogFuncDensity{F<:Base.Callable}
 end
 LogFuncDensity
 
-@inline isdensity(::LogFuncDensity) = true
+@inline isdensitytype(::Type{<:LogFuncDensity}) = true
 
 @inline logdensityof(density::LogFuncDensity, x) = density._log_f(x)
 @inline logdensityof(density::LogFuncDensity) = density._log_f
