@@ -61,7 +61,7 @@ end
     logfuncdensity(log_f::Base.Callable)
 
 Returns a `DensityInterface`-compatible density that is defined by a given
-log-density function `fF`:
+log-density function `log_f`:
 
 ```julia
 density = logfuncdensity(log_f)
