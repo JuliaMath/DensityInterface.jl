@@ -19,7 +19,7 @@ end
 
 """
     logdensityof(density, x)::Real
-    logdensityof(density)::Function
+    logdensityof(density)
 
 Computes the logarithmic value of `density` at a given point `x`, resp.
 returns a function that does so:
@@ -37,11 +37,12 @@ log_f(x) == logdensityof(density, x)
 logfuncdensity(log_f) == density
 ```
 
-`logdensityof(density)` returns an instance of [`DensityInterface.LogDensityOf`](@ref)
-by default, but may be specialized to return something else, depending on the
-type of `density`). However, if a custom method is provided for
-`logdensityof(density::SomeDensity)`, then a custom method must be provided for
-[`logfuncdensity`](@ref) as well that guarantees
+`logdensityof(density)` defaults to `Base.Fix1(logdensityof, density)`, but
+may be specialized for a density type. If so, [`logfuncdensity`](@ref) will
+typically have to be specialized for the return type of `logdensityof` as
+well.
+    
+The following identity must always hold:
 
 ```julia
 logfuncdensity(logdensityof(density)) == density
@@ -52,7 +53,7 @@ export logdensityof
 
 function logdensityof(density)
     check_if_densitytype(typeof(density))
-    LogDensityOf(density)
+    Base.Fix1(logdensityof, density)
 end
 
 
@@ -70,39 +71,21 @@ logdensityof(density) == log_f
 
 `logfuncdensity(log_f)` returns an instance of [`DensityInterface.LogFuncDensity`](@ref)
 by default, but may be specialized to return something else depending on the
-type of `log_f`).
+type of `log_f`). If so, [`logdensityof`](@ref) will typically have to be
+specialized for the return type of `logfuncdensity` as well.
+    
+The following identity must always hold:
+
+```julia
+logfuncdensity(logdensityof(density)) == density
+```
 """
 function logfuncdensity end
 export logfuncdensity
 
 logfuncdensity(log_f::Base.Callable) = LogFuncDensity(log_f)
 
-
-
-"""
-    struct DensityInterface.LogDensityOf{D} <: Function
-
-Computes the logarithmic value of `density` at given points
-
-Typically, `LogDensityOf(some_density)` should not be called directly,
-[`logdensityof`](@ref) should be used instead.
-"""
-struct LogDensityOf{D} <: Function
-    _density::D
-end
-
-@inline (log_f::LogDensityOf)(x) = logdensityof(log_f._density, x)
-
-logfuncdensity(log_f::LogDensityOf) = log_f._density
-
-function Base.show(io::IO, log_f::LogDensityOf)
-    print(io, Base.typename(typeof(log_f)).name, "(")
-    show(io, log_f._density)
-    print(io, ")")
-end
-
-Base.show(io::IO, M::MIME"text/plain", log_f::LogDensityOf) = show(io, log_f)
-
+logfuncdensity(log_f::Base.Fix1{typeof(logdensityof)}) = log_f.x
 
 
 """

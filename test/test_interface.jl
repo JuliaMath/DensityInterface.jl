@@ -20,7 +20,7 @@ DensityInterface.logdensityof(::MyDensity, x::Any) = norm(x)^2
     density = MyDensity()
     @test @inferred isdensitytype(typeof(density)) == true
     @test @inferred(logdensityof(density, x)) == ref_logf(x)
-    @test @inferred(logdensityof(density)) isa DensityInterface.LogDensityOf
+    @test @inferred(logdensityof(density)) isa Base.Fix1{typeof(logdensityof)}
     log_f = logdensityof(density)
     @test @inferred(log_f(x)) == logdensityof(density, x)
     @test @inferred(logfuncdensity(log_f)) === density
