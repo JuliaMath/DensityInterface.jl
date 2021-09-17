@@ -58,7 +58,7 @@ end
 
 
 """
-    logfuncdensity(log_f::Base.Callable)
+    logfuncdensity(log_f)
 
 Returns a `DensityInterface`-compatible density that is defined by a given
 log-density function `log_f`:
@@ -83,19 +83,19 @@ logfuncdensity(logdensityof(density)) == density
 function logfuncdensity end
 export logfuncdensity
 
-logfuncdensity(log_f::Base.Callable) = LogFuncDensity(log_f)
+logfuncdensity(log_f) = LogFuncDensity(log_f)
 
 logfuncdensity(log_f::Base.Fix1{typeof(logdensityof)}) = log_f.x
 
 
 """
-    struct DensityInterface.LogFuncDensity{F<:Base.Callable}
+    struct DensityInterface.LogFuncDensity{F}
 
 Wraps a log-density function `log_f` to make it compatible with `DensityInterface`
 interface. Typically, `LogFuncDensity(log_f)` should not be called
 directly, [`logfuncdensity`](@ref) should be used instead.
 """
-struct LogFuncDensity{F<:Base.Callable}
+struct LogFuncDensity{F}
     _log_f::F
 end
 LogFuncDensity
