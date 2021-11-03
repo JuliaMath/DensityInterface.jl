@@ -8,7 +8,7 @@ Returns `true` if `d` is compatible with the `DensityInterface` interface.
 
 `hasdensity(d) == true` implies that `d` is either a density itself or has an
 associated density, e.g. a PDF or a Radon–Nikodym derivative with an implied
-base measure. Also implies that the value of that density at given points can
+base measure. It also implies that the value of that density at given points can
 be calculated via [`logdensityof`](@ref) and [`densityof`](@ref).
 """
 function hasdensity end
