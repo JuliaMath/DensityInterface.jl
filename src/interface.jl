@@ -137,7 +137,7 @@ end
 """
     densityof(d, x)::Real
 
-Computes the value of density `d` or it's associated density, resp. returns a
+Compute the value of density `d` or its associated density, resp. return a
 function that does so:
 
 ```jldoctest a
