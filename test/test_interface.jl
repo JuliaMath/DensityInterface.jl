@@ -12,24 +12,11 @@ DensityInterface.logdensityof(::MyDensity, x::Any) = norm(x)^2
 
 
 @testset "interface" begin
-    @inferred hasdensity("foo") == false
-
-    ref_logf(x) = norm(x)^2
-    x = [1, 2, 3]
+    @test @inferred(hasdensity("foo")) == false
 
     density = MyDensity()
-    @test @inferred hasdensity(density) == true
-    @test @inferred(logdensityof(density, x)) == ref_logf(x)
-    @test @inferred(logdensityof(density)) isa Base.Fix1{typeof(logdensityof)}
-    log_f = logdensityof(density)
-    @test @inferred(log_f(x)) == logdensityof(density, x)
-    @test @inferred(logfuncdensity(log_f)) === density
+    x = [1, 2, 3]
 
-    log_f = ref_logf
-    @test @inferred(logfuncdensity(log_f)) isa DensityInterface.LogFuncDensity
-    density = logfuncdensity(log_f)
-    @test @inferred hasdensity(density) == true
-    @test @inferred(logdensityof(density, x)) == ref_logf(x)
-    @test @inferred(logdensityof(density)) === log_f
-    @test @inferred(log_f(x)) == logdensityof(density, x)
+    DensityInterface.test_density_interface(density, x, norm(x)^2)
+    @test @inferred(logfuncdensity(logdensityof(density))) === density
 end

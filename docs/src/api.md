@@ -19,5 +19,5 @@ DensityInterface.LogFuncDensity
 ## Test utility
 
 ```@docs
-#DensityInterface.test_density_interface
+DensityInterface.test_density_interface
 ```
