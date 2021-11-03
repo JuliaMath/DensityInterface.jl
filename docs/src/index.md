@@ -15,7 +15,7 @@ DensityInterface.hasdensity(::SomeDensity) = true
 DensityInterface.logdensityof(d::SomeDensity, x) = log_of_d_at_x
 ```
 
-The object `d` may be a density itself or something that can be said to have a density. If `d` is a distribution, the density is the PDF. If `d` is a measure in general, it's density is implied here to be the Radon–Nikodym derivative of `d` and it's base measure. In statistical inference applications, for example, `d` might be a likelihood, prior or posterior.
+The object `d` may be a density itself or something that can be said to have a density. If `d` is a distribution, the density is its probability density function. In the measure theoretical sense, the density function is the Radon–Nikodym derivative of `d` with respect to a base measure. In statistical inference applications, for example, `d` - might be a likelihood, prior or posterior.
 
 Note: The package [`MeasureTheory`](https://github.com/cscherrer/MeasureTheory.jl) provides tools to work with densities and measures that go beyond the density in respect to an implied base measure.
 
