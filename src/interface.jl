@@ -127,7 +127,7 @@ LogFuncDensity
 @inline logdensityof(d::LogFuncDensity) = d._log_f
 
 function Base.show(io::IO, d::LogFuncDensity)
-    print(io, Base.typename(typeof(d)).name, "(")
+    print(io, nameof(typeof(d)), "(")
     show(io, d._log_f)
     print(io, ")")
 end
