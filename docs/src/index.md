@@ -17,7 +17,7 @@ DensityInterface.logdensityof(d::SomeDensity, x) = log_of_d_at_x
 
 The object `d` may be a density itself or something that can be said to have a density. If `d` is a distribution, the density is its probability density function. In the measure theoretical sense, the density function is the Radon–Nikodym derivative of `d` with respect to an implied base measure. In statistical inference applications, for example, `d` - might be a likelihood, prior or posterior[^1].
 
-DensityInterface includes a default implementation of a density defined by a log-density function. It provides a convenient way of passing a log-density function to algorithms like optimizers, samplers, etc.:
+DensityInterface automatically provides `logdensityof(d)`, equivalent to `x -> logdensityof(d, x)`. This constitutes a convenient way of passing a (log-)density function to algorithms like optimizers, samplers, etc.:
 
 ```julia
 using DensityInterface
@@ -29,8 +29,7 @@ log_f(x) == logdensityof(d, x)
 SomeOptimizerPackage.maximize(logdensityof(d), x_init)
 ```
 
-Reversely, a given log-density function `log_f` can be converted to a
-DensityInterface-compatible density object using [`logfuncdensity`](@ref):
+Reversely, a given log-density function `log_f` can be converted to a DensityInterface-compatible density object using [`logfuncdensity`](@ref):
 
 ```julia
 d = logfuncdensity(log_f)
