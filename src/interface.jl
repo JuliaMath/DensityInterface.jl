@@ -4,7 +4,7 @@
 """
     hasdensity(d)::Bool
 
-Returns `true` if `d` is compatible with the `DensityInterface` interface.
+Return `true` if `d` is compatible with the `DensityInterface` interface.
 
 `hasdensity(d) == true` implies that `d` is either a density itself or has an
 associated density, e.g. a probability density function or a Radon–Nikodym
