@@ -39,18 +39,14 @@ and
 ```julia
 log_f = logdensityof(d)
 log_f(x) == logdensityof(d, x)
-logfuncdensity(log_f) == d
 ```
 
 `logdensityof(d)` defaults to `Base.Fix1(logdensityof, d)`, but may be
 specialized. If so, [`logfuncdensity`](@ref) will typically have to be
 specialized for the return type of `logdensityof` as well.
-    
-The following identity must always hold:
 
-```julia
-logfuncdensity(logdensityof(d)) == d
-```
+[`logfuncdensity`](@ref) is the inverse of `logdensityof`, so
+`logfuncdensity(log_f)` must be equivalent to `d`.
 
 See also [`hasdensity`](@ref) and [`densityof`](@ref).
 """
@@ -140,14 +136,14 @@ densityof(d, x) == densityof(d)(x)
 and
 
 ```julia
-f = densityof(density)
-f(x) == densityof(density, x)
+f = densityof(d)
+f(x) == densityof(d, x)
 ```
 
-`densityof(density)` defaults to `exp(logdensityof(density))`, but
+`densityof(d, x)` defaults to `exp(logdensityof(d, x))`, but
 may be specialized for specific density-like types.
 
-`densityof(density)` defaults to `Base.Fix1(densityof, density)`, but
+`densityof(d)` defaults to `Base.Fix1(densityof, d)`, but
 may be specialized for specific density-like types.
 
 See also [`hasdensity`](@ref) and [`logdensityof`](@ref).
