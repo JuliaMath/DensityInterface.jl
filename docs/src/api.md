@@ -1,27 +1,23 @@
 # API
 
+## Interface
 
-## Modules
-
-```@index
-Order = [:module]
+```@docs
+densityof
+hasdensity
+logdensityof
+logfuncdensity
 ```
 
-## Types and constants
 
-```@index
-Order = [:type, :constant]
+## Types
+
+```@docs
+DensityInterface.LogFuncDensity
 ```
 
-## Functions and macros
+## Test utility
 
-```@index
-Order = [:macro, :function]
-```
-
-# Documentation
-
-```@autodocs
-Modules = [DensityInterface]
-Order = [:module, :type, :constant, :macro, :function]
+```@docs
+#DensityInterface.test_density_interface
 ```
