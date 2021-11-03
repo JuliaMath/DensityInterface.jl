@@ -160,7 +160,7 @@ export densityof
     densityof(d)
 
 Returns a function that computes the value of density `d` or it's associated
-density at a given points.
+density at a given point.
 
 ```jldoctest a
 julia> f = densityof(d);
