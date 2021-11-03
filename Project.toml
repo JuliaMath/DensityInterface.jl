@@ -2,12 +2,15 @@ name = "DensityInterface"
 uuid = "b429d917-457f-4dbc-8f4c-0cc954292b1d"
 version = "0.2.0"
 
+[deps]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
 [compat]
 julia = "1"
 
 [extras]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["LinearAlgebra", "Test"]
+test = ["Documenter", "LinearAlgebra"]

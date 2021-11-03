@@ -7,6 +7,14 @@
 using Documenter
 using DensityInterface
 
+# Doctest setup
+DocMeta.setdocmeta!(
+    DensityInterface,
+    :DocTestSetup,
+    :(using DensityInterface);
+    recursive=true,
+)
+
 makedocs(
     sitename = "DensityInterface",
     modules = [DensityInterface],

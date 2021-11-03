@@ -1,10 +1,5 @@
 # API
 
-```@meta
-DocTestSetup  = quote
-    using DensityInterface
-end
-```
 
 ## Modules
 
