@@ -72,7 +72,7 @@ end
 """
     logfuncdensity(log_f)
 
-Returns a `DensityInterface`-compatible density that is defined by a given
+Return a `DensityInterface`-compatible density that is defined by a given
 log-density function `log_f`:
 
 ```jldoctest
