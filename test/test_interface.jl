@@ -14,9 +14,11 @@ DensityInterface.logdensityof(::MyDensity, x::Any) = norm(x)^2
 @testset "interface" begin
     @test @inferred(hasdensity("foo")) == false
 
-    density = MyDensity()
+    d1 = MyDensity()
     x = [1, 2, 3]
+    DensityInterface.test_density_interface(d1, x, norm(x)^2)
 
-    DensityInterface.test_density_interface(density, x, norm(x)^2)
-    @test @inferred(logfuncdensity(logdensityof(density))) === density
+    d2 = logfuncdensity(x -> norm(x)^2)
+    x = [1, 2, 3]
+    DensityInterface.test_density_interface(d2, x, norm(x)^2)
 end
