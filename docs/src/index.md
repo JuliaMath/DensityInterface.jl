@@ -4,7 +4,7 @@
 DensityInterface
 ```
 
-This package defines an interface for mathematical/statistical densities in Julia. The interface comprises the functions [`hasdensity`](@ref),  [`logdensityof`](@ref)/[`densityof`](@ref) and [`logfuncdensity`](@ref).
+This package defines an interface for mathematical/statistical densities and objects associated with a density in Julia. The interface comprises the functions [`hasdensity`](@ref),  [`logdensityof`](@ref)/[`densityof`](@ref) and [`logfuncdensity`](@ref).
 
 The following methods must be provided to make a type (e.g. `SomeDensity`) compatible with the interface:
 
@@ -12,30 +12,35 @@ The following methods must be provided to make a type (e.g. `SomeDensity`) compa
 import DensityInterface
 
 DensityInterface.hasdensity(::SomeDensity) = true
-DensityInterface.logdensityof(density::SomeDensity, x) = log_of_density_at_x
+DensityInterface.logdensityof(d::SomeDensity, x) = log_of_d_at_x
 ```
 
-DensityInterface includes a default implementation of `logdensityof(density)`. It provides a convenient way of passing a log-density function to algorithms like optimizers, samplers, etc.:
+The object `d` may be a density itself or something that can be said to have a density. If `d` is a distribution, the density is the PDF. If `d` is a measure in general, it's density is implied here to be the Radon–Nikodym derivative of `d` and it's base measure. In statistical inference applications, for example, `d` might be a likelihood, prior or posterior.
+
+
+Note: The package [`MeasureTheory`](https://github.com/cscherrer/MeasureTheory.jl) provides tools to work with densities and measures that go beyond the density in respect to an implied base measure.
+
+DensityInterface includes a default implementation of `logdensityof(d)`. It provides a convenient way of passing a log-density function to algorithms like optimizers, samplers, etc.:
 
 ```julia
 using DensityInterface
 
-density = SomeDensity()
-log_f = logdensityof(density)
-log_f(x) == logdensityof(density, x)
+d = SomeDensity()
+log_f = logdensityof(d)
+log_f(x) == logdensityof(d, x)
 
-SomeOptimizerPackage.maximize(logdensityof(density), x_init)
+SomeOptimizerPackage.maximize(logdensityof(d), x_init)
 ```
 
 Reversely, a given log-density function `log_f` can be converted to a DensityInterface-compatible density object using [`logfuncdensity`](@ref):
 
 ```julia
-density = logfuncdensity(log_f)
+d = logfuncdensity(log_f)
 ```
 
 The following must always hold true:
 
 ```julia
-logfuncdensity(logdensityof(density)) == density
+logfuncdensity(logdensityof(d)) == d
 logdensityof(logfuncdensity(log_f)) == log_f
 ```
