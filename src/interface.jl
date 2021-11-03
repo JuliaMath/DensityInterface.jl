@@ -4,8 +4,8 @@
 """
     hasdensity(d::Any)
 
-Returns `true` if `type` is compatible with the `DensityInterface` interface,
-otherwise returns `false` by default.
+Returns `true` if `d` is compatible with the `DensityInterface` interface,
+implying that has an associated density (function) or is a density itself.
 """
 function hasdensity end
 export hasdensity
@@ -38,15 +38,17 @@ logfuncdensity(log_f) == density
 ```
 
 `logdensityof(density)` defaults to `Base.Fix1(logdensityof, density)`, but
-may be specialized for a density type. If so, [`logfuncdensity`](@ref) will
-typically have to be specialized for the return type of `logdensityof` as
-well.
+may be specialized for specific density-like types. If so,
+[`logfuncdensity`](@ref) will typically have to be specialized for the return
+type of `logdensityof` as well.
     
 The following identity must always hold:
 
 ```julia
 logfuncdensity(logdensityof(density)) == density
-```    
+```
+
+See also [`densityof`](@ref).
 """
 function logdensityof end
 export logdensityof
@@ -109,4 +111,41 @@ function Base.show(io::IO, density::LogFuncDensity)
     print(io, Base.typename(typeof(density)).name, "(")
     show(io, density._log_f)
     print(io, ")")
+end
+
+
+
+"""
+    densityof(d, x)::Real
+    densityof(d)
+
+Computes the density value of `d` at a given point `x`, resp.
+returns a function that does so:
+
+```julia
+densityof(some_density, x) == exp(logdensityof(some_density, x))
+densityof(some_density, x) == densityof(some_density)(x)
+```
+
+and
+
+```julia
+f = densityof(density)
+f(x) == densityof(density, x)
+```
+
+`densityof(density)` defaults to `exp(logdensityof(density))`, but
+may be specialized for specific density-like types.
+
+`densityof(density)` defaults to `Base.Fix1(densityof, density)`, but
+may be specialized for specific density-like types.
+
+See also [`densityof`](@ref).
+"""
+densityof(d, x) = exp(logdensityof(d, x))
+export densityof
+
+function densityof(density)
+    check_hasdensity(density)
+    Base.Fix1(densityof, density)
 end

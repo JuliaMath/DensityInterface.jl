@@ -1,6 +1,6 @@
 # DensityInterface.jl
 
-This package defines an interface for mathematical/statistical densities in Julia. The interface comprises the functions [`hasdensity`](@ref),  [`logdensityof`](@ref) and [`logfuncdensity`](@ref).
+This package defines an interface for mathematical/statistical densities in Julia. The interface comprises the functions [`hasdensity`](@ref),  [`logdensityof`](@ref)/[`densityof`](@ref) and [`logfuncdensity`](@ref).
 
 The following methods must be provided to make a type (e.g. `SomeDensity`) compatible with the interface:
 
