@@ -159,7 +159,7 @@ export densityof
 """
     densityof(d)
 
-Returns a function that computes the value of density `d` or it's associated
+Return a function that computes the value of density `d` or its associated
 density at a given point.
 
 ```jldoctest a
