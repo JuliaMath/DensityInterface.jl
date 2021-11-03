@@ -2,18 +2,18 @@
 
 
 """
-    isdensitytype(type::Type)
+    hasdensity(d::Any)
 
 Returns `true` if `type` is compatible with the `DensityInterface` interface,
 otherwise returns `false` by default.
 """
-function isdensitytype end
-export isdensitytype
+function hasdensity end
+export hasdensity
 
-@inline isdensitytype(::Type) = false
+@inline hasdensity(::Any) = false
 
-function check_if_densitytype(type::Type)
-    isdensitytype(type) || throw("Type $(type) is not compatible with DensityInterface")
+function check_hasdensity(d)
+    hasdensity(d) || throw("Object of type $(typeof(d)) is not compatible with DensityInterface")
 end
 
 
@@ -52,7 +52,7 @@ function logdensityof end
 export logdensityof
 
 function logdensityof(density)
-    check_if_densitytype(typeof(density))
+    check_hasdensity(density)
     Base.Fix1(logdensityof, density)
 end
 
@@ -100,7 +100,7 @@ struct LogFuncDensity{F}
 end
 LogFuncDensity
 
-@inline isdensitytype(::Type{<:LogFuncDensity}) = true
+@inline hasdensity(::LogFuncDensity) = true
 
 @inline logdensityof(density::LogFuncDensity, x) = density._log_f(x)
 @inline logdensityof(density::LogFuncDensity) = density._log_f
