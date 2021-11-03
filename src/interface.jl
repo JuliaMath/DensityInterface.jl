@@ -45,7 +45,7 @@ export logdensityof
 """
     logdensityof(d)
 
-Returns a function that computes the logarithmic value of density `d`
+Return a function that computes the logarithmic value of density `d`
 or it's associated density at a given points.
 
 ```jldoctest a
