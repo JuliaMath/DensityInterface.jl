@@ -3,7 +3,7 @@
 using DensityInterface
 using Test
 
-using LinearAlgebra
+using LinearAlgebra, InverseFunctions
 
 
 struct MyDensity end
@@ -12,6 +12,9 @@ DensityInterface.logdensityof(::MyDensity, x::Any) = norm(x)^2
 
 
 @testset "interface" begin
+    @test inverse(logdensityof) == logfuncdensity
+    @test inverse(logfuncdensity) == logdensityof
+
     @test @inferred(hasdensity("foo")) == false
 
     d1 = MyDensity()

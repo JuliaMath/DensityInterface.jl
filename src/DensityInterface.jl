@@ -7,6 +7,7 @@ Trait-based interface for mathematical/statistical densities
 """
 module DensityInterface
 
+using InverseFunctions
 using Test
 
 include("interface.jl")

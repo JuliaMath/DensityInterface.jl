@@ -71,20 +71,20 @@ log-density function `log_f`:
 
 ```julia
 d = logfuncdensity(log_f)
+hasdensity(d) == true
 logdensityof(d, x) == log_f(x)
-logdensityof(d) == log_f
 ```
 
 `logfuncdensity(log_f)` returns an instance of [`DensityInterface.LogFuncDensity`](@ref)
 by default, but may be specialized to return something else depending on the
 type of `log_f`). If so, [`logdensityof`](@ref) will typically have to be
 specialized for the return type of `logfuncdensity` as well.
-    
-The following identity must always hold:
 
-```julia
-logfuncdensity(logdensityof(d)) == d
-```
+`logfuncdensity` is the inverse of `logdensityof`, so the following must
+hold true:
+
+* `logfuncdensity(logdensityof(d))` is equivalent to `d`
+* `logdensityof(logfuncdensity(log_f))` is equivalent to `log_f`.
 
 See also [`hasdensity`](@ref).
 """
@@ -94,6 +94,9 @@ export logfuncdensity
 logfuncdensity(log_f) = LogFuncDensity(log_f)
 
 logfuncdensity(log_f::Base.Fix1{typeof(logdensityof)}) = log_f.x
+
+InverseFunctions.inverse(::typeof(logfuncdensity)) = logdensityof
+InverseFunctions.inverse(::typeof(logdensityof)) = logfuncdensity
 
 
 """
