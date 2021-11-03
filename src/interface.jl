@@ -11,6 +11,7 @@ associated density, e.g. a probability density function or a Radon–Nikodym
 derivative with respect to an implicit base measure. It also implies that the
 value of that density at given points can be calculated via
 [`logdensityof`](@ref) and [`densityof`](@ref).
+```
 """
 function hasdensity end
 export hasdensity
@@ -24,22 +25,35 @@ end
 
 """
     logdensityof(d, x)::Real
-    logdensityof(d)
 
 Computes the logarithmic value of density `d` or it's associated density
-at a given point `x`, resp. returns a function that does so:
+at a given point `x`.
 
-```julia
-hasdensity(d) == true
-logy = logdensityof(d, x)
-logdensityof(d, x) == logdensityof(d)(x)
+```jldoctest a
+julia> hasdensity(d)
+true
+
+julia> logy = logdensityof(d, x); logy isa Real
+true
 ```
 
-and
+See also [`hasdensity`](@ref) and [`densityof`](@ref).
+"""
+function logdensityof end
+export logdensityof
 
-```julia
-log_f = logdensityof(d)
-log_f(x) == logdensityof(d, x)
+"""
+    logdensityof(d)
+
+Returns a function that computes the logarithmic value of density `d`
+or it's associated density at a given points.
+
+```jldoctest a
+julia> log_f = logdensityof(d); log_f isa Function
+true
+
+julia> log_f(x) == logdensityof(d, x)
+true
 ```
 
 `logdensityof(d)` defaults to `Base.Fix1(logdensityof, d)`, but may be
@@ -48,12 +62,7 @@ specialized for the return type of `logdensityof` as well.
 
 [`logfuncdensity`](@ref) is the inverse of `logdensityof`, so
 `logfuncdensity(log_f)` must be equivalent to `d`.
-
-See also [`hasdensity`](@ref) and [`densityof`](@ref).
 """
-function logdensityof end
-export logdensityof
-
 function logdensityof(d)
     check_hasdensity(d)
     Base.Fix1(logdensityof, d)
@@ -66,10 +75,14 @@ end
 Returns a `DensityInterface`-compatible density that is defined by a given
 log-density function `log_f`:
 
-```julia
-d = logfuncdensity(log_f)
-hasdensity(d) == true
-logdensityof(d, x) == log_f(x)
+```jldoctest
+julia> d = logfuncdensity(log_f);
+
+julia> hasdensity(d) == true
+true
+
+julia> logdensityof(d, x) == log_f(x)
+true
 ```
 
 `logfuncdensity(log_f)` returns an instance of [`DensityInterface.LogFuncDensity`](@ref)
@@ -123,35 +136,41 @@ end
 
 """
     densityof(d, x)::Real
-    densityof(d)
 
 Computes the value of density `d` or it's associated density, resp. returns a
 function that does so:
 
-```julia
-hasdensity(d) == true
-densityof(d, x) == exp(logdensityof(d, x))
-densityof(d, x) == densityof(d)(x)
-```
+```jldoctest a
+julia> hasdensity(d)
+true
 
-and
-
-```julia
-f = densityof(d)
-f(x) == densityof(d, x)
+julia> densityof(d, x) == exp(logdensityof(d, x))
+true
 ```
 
 `densityof(d, x)` defaults to `exp(logdensityof(d, x))`, but
-may be specialized for specific density-like types.
-
-`densityof(d)` defaults to `Base.Fix1(densityof, d)`, but
-may be specialized for specific density-like types.
+may be specialized.
 
 See also [`hasdensity`](@ref) and [`logdensityof`](@ref).
 """
 densityof(d, x) = exp(logdensityof(d, x))
 export densityof
 
+"""
+    densityof(d)
+
+Returns a function that computes the value of density `d` or it's associated
+density at a given points.
+
+```jldoctest a
+julia> f = densityof(d);
+
+julia> f(x) == densityof(d, x)
+true
+```
+
+`densityof(d)` defaults to `Base.Fix1(densityof, d)`, but may be specialized.
+"""
 function densityof(d)
     check_hasdensity(d)
     Base.Fix1(densityof, d)

@@ -11,8 +11,13 @@ Test.@testset "Package DensityInterface" begin
     Documenter.DocMeta.setdocmeta!(
         DensityInterface,
         :DocTestSetup,
-        :(using DensityInterface);
-        recursive=true,
+        quote
+            using DensityInterface
+            d = logfuncdensity(x -> x^2)
+            log_f = logdensityof(d)
+            x = 4.2
+        end;
+            recursive=true,
     )
     Documenter.doctest(DensityInterface)
 end # testset

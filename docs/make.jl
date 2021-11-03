@@ -11,7 +11,12 @@ using DensityInterface
 DocMeta.setdocmeta!(
     DensityInterface,
     :DocTestSetup,
-    :(using DensityInterface);
+    quote
+        using DensityInterface
+        d = logfuncdensity(x -> x^2)
+        log_f = logdensityof(d)
+        x = 4.2
+    end;
     recursive=true,
 )
 

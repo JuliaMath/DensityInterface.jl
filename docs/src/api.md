@@ -3,10 +3,12 @@
 ## Interface
 
 ```@docs
-densityof
 hasdensity
 logdensityof
+logdensityof(::Any)
 logfuncdensity
+densityof
+densityof(::Any)
 ```
 
 
