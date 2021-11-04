@@ -46,7 +46,7 @@ export logdensityof
     logdensityof(d)
 
 Return a function that computes the logarithmic value of density `d`
-or it's associated density at a given points.
+or its associated density at a given point.
 
 ```jldoctest a
 julia> log_f = logdensityof(d); log_f isa Function
