@@ -26,7 +26,7 @@ end
 """
     logdensityof(d, x)::Real
 
-Computes the logarithmic value of density `d` or it's associated density
+Compute the logarithmic value of density `d` or it's associated density
 at a given point `x`.
 
 ```jldoctest a
