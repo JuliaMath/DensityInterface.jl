@@ -15,7 +15,7 @@ DocMeta.setdocmeta!(
         using DensityInterface
         d = logfuncdensity(x -> x^2)
         log_f = logdensityof(d)
-        x = 4.2
+        x = 4
     end;
     recursive=true,
 )
