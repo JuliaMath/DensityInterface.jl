@@ -25,7 +25,7 @@ makedocs(
     modules = [DensityInterface],
     format = Documenter.HTML(
         prettyurls = !("local" in ARGS),
-        canonical = "https://oschulz.github.io/DensityInterface.jl/stable/"
+        canonical = "https://JuliaMath.github.io/DensityInterface.jl/stable/"
     ),
     pages = [
         "Home" => "index.md",
@@ -38,7 +38,7 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/oschulz/DensityInterface.jl.git",
+    repo = "github.com/JuliaMath/DensityInterface.jl.git",
     forcepush = true,
     push_preview = true,
 )
