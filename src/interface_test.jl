@@ -1,7 +1,7 @@
 # This file is a part of DensityInterface.jl, licensed under the MIT License (MIT).
 
 """
-    DensityInterface.test_density_interface(d, x, ref_logd_at_x)
+    DensityInterface.test_density_interface(d, x, ref_logd_at_x; compare=isapprox, kwargs...)
 
 Test if `d` is compatible with `DensityInterface`.
 
@@ -11,24 +11,28 @@ that the behavior of [`logdensityof(d)`](@ref),
 
 Also tests if `logfuncdensity(logdensityof(d))` returns
 a density equivalent to `d` in respect to the functions above.
+
+The results of `logdensityof(d, x)` and `densityof(d, x)` are compared to
+`ref_logd_at_x` and `exp(ref_logd_at_x)` using `compare`. `kwargs...` are
+forwarded to `compare`.
 """
-function test_density_interface(d, x, ref_logd_at_x)
+function test_density_interface(d, x, ref_logd_at_x; compare=isapprox, kwargs...)
     @testset "test_density_interface: $d with input $x" begin
         ref_d_at_x = exp(ref_logd_at_x)
 
         @test hasdensity(d) == true
-        @test logdensityof(d, x) == ref_logd_at_x
+        @test compare(logdensityof(d, x), ref_logd_at_x; kwargs...)
         log_f = logdensityof(d)
-        @test log_f(x) == ref_logd_at_x
-        @test densityof(d,x) == ref_d_at_x
-        @test densityof(d)(x) == ref_d_at_x
+        @test compare(log_f(x), ref_logd_at_x; kwargs...)
+        @test compare(densityof(d,x), ref_d_at_x; kwargs...)
+        @test compare(densityof(d)(x), ref_d_at_x; kwargs...)
 
         d2 = logfuncdensity(log_f)
         @test hasdensity(d2) == true
-        @test logdensityof(d2, x) == ref_logd_at_x
+        @test compare(logdensityof(d2, x), ref_logd_at_x; kwargs...)
         log_f2 = logdensityof(d2)
-        @test log_f2(x) == ref_logd_at_x
-        @test densityof(d2,x) == ref_d_at_x
-        @test densityof(d2)(x) == ref_d_at_x
+        @test compare(log_f2(x), ref_logd_at_x; kwargs...)
+        @test compare(densityof(d2,x), ref_d_at_x; kwargs...)
+        @test compare(densityof(d2)(x), ref_d_at_x; kwargs...)
     end
 end
