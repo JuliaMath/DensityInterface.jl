@@ -1,7 +1,7 @@
 # This file is a part of DensityInterface.jl, licensed under the MIT License (MIT).
 
 """
-    DensityInterface.test_density_interface(d, x, ref_logd_at_x; compare=isapprox, kwargs...)
+    DensityInterface.test_density_interface(d, x, ref_logd_at_x; kwargs...)
 
 Test if `d` is compatible with `DensityInterface`.
 
@@ -13,26 +13,26 @@ Also tests if `logfuncdensity(logdensityof(d))` returns
 a density equivalent to `d` in respect to the functions above.
 
 The results of `logdensityof(d, x)` and `densityof(d, x)` are compared to
-`ref_logd_at_x` and `exp(ref_logd_at_x)` using `compare`. `kwargs...` are
-forwarded to `compare`.
+`ref_logd_at_x` and `exp(ref_logd_at_x)` using `isapprox`. `kwargs...` are
+forwarded to `isapprox`.
 """
-function test_density_interface(d, x, ref_logd_at_x; compare=isapprox, kwargs...)
+function test_density_interface(d, x, ref_logd_at_x; kwargs...)
     @testset "test_density_interface: $d with input $x" begin
         ref_d_at_x = exp(ref_logd_at_x)
 
         @test hasdensity(d) == true
-        @test compare(logdensityof(d, x), ref_logd_at_x; kwargs...)
+        @test isapprox(logdensityof(d, x), ref_logd_at_x; kwargs...)
         log_f = logdensityof(d)
-        @test compare(log_f(x), ref_logd_at_x; kwargs...)
-        @test compare(densityof(d,x), ref_d_at_x; kwargs...)
-        @test compare(densityof(d)(x), ref_d_at_x; kwargs...)
+        @test isapprox(log_f(x), ref_logd_at_x; kwargs...)
+        @test isapprox(densityof(d,x), ref_d_at_x; kwargs...)
+        @test isapprox(densityof(d)(x), ref_d_at_x; kwargs...)
 
         d2 = logfuncdensity(log_f)
         @test hasdensity(d2) == true
-        @test compare(logdensityof(d2, x), ref_logd_at_x; kwargs...)
+        @test isapprox(logdensityof(d2, x), ref_logd_at_x; kwargs...)
         log_f2 = logdensityof(d2)
-        @test compare(log_f2(x), ref_logd_at_x; kwargs...)
-        @test compare(densityof(d2,x), ref_d_at_x; kwargs...)
-        @test compare(densityof(d2)(x), ref_d_at_x; kwargs...)
+        @test isapprox(log_f2(x), ref_logd_at_x; kwargs...)
+        @test isapprox(densityof(d2,x), ref_d_at_x; kwargs...)
+        @test isapprox(densityof(d2)(x), ref_d_at_x; kwargs...)
     end
 end
