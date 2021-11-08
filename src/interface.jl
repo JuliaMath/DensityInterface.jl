@@ -19,7 +19,7 @@ export hasdensity
 @inline hasdensity(::Any) = false
 
 function check_hasdensity(d)
-    hasdensity(d) || error("Object of type $(typeof(d)) is not compatible with DensityInterface")
+    hasdensity(d) || throw(ArgumentError("Object of type $(typeof(d)) is not compatible with DensityInterface"))
 end
 
 
