@@ -16,6 +16,7 @@ DensityInterface.logdensityof(::MyDensity, x::Any) = norm(x)^2
     @test inverse(logfuncdensity) == logdensityof
 
     @test @inferred(hasdensity("foo")) == false
+    @test_throws ArgumentError logdensityof("foo")
 
     d1 = MyDensity()
     x = [1, 2, 3]
