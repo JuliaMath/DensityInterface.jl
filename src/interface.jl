@@ -2,176 +2,168 @@
 
 
 """
-    ismeasure(object)::Bool
+    abstract type DensityKind end
 
-Return `true` if `object` is a measure.
-
-!!ToDo: More text!!
-
-Defaults to `false`. For types that are measures (not densities), define
-
-```julia
-@inline ismeasure(::MyMeasureType) = true
-```
-
-The above will automatically provide `hasdensity(::MyMeasureType) == true`.
-
-See also [`hasdensity`](@ref) and [`isdensity`](@ref).
+Abstract supertype for types returned by `densitykind(object)`.
 """
-function ismeasure end
-export ismeasure
-
-@inline ismeasure(object) = false
-
+abstract type DensityKind end
+export DensityKind
 
 """
-    hasdensity(object)::Bool
+    abstract type HasNoDensity end
 
-Return `true` if `object` is compatible with the `DensityInterface` interface.
+Possible return value of `densitykind(object)`. Indicates that
+`object` *is not and does not have* a density, as understood by `DensityInterface`.
+"""
+abstract type HasNoDensity <: DensityKind end
+export HasNoDensity
 
-`hasdensity(object) == true` implies that `object` is either a density itself or
-has an associated density, e.g. a probability density function or a Radon–Nikodym
-derivative with respect to an implicit base measure. It also implies that the
-value of that density at given points can be calculated via
+"""
+    abstract type IsOrHasDensity end
+
+Possible return value of `densitykind(object)`. Indicates that
+`object` either *is* or *has* a density, as understood by `DensityInterface`.
+
+See also [`logdensityof`](@ref) and [`densityof`](@ref).
+"""
+abstract type IsOrHasDensity <: DensityKind end
+export IsOrHasDensity
+
+"""
+    abstract type IsDensity end
+
+Possible return value of `densitykind(object)`. Indicates that
+`object` *is* a density, as understood by `DensityInterface`.
+
+See also [`logdensityof`](@ref) and [`densityof`](@ref).
+"""
+abstract type IsDensity <: IsOrHasDensity end
+export IsDensity
+
+
+"""
+    densitykind(object)::Type{<:DensityKind}
+
+Return a subtype of `IsOrHasDensity` or `HasNoDensity`, to indicate if `object` is
+compatible with the `DensityInterface` API.
+
+`densitykind(object) <: IsOrHasDensity` implies that `object` is either a density
+itself or has an associated density, e.g. a probability density function or a
+Radon–Nikodym derivative with respect to an implicit base measure. It also
+implies that the value of that density at given points can be calculated via
 [`logdensityof`](@ref) and [`densityof`](@ref).
 
-Defaults to `ismeasure(object)`. For types that are densities, not measures,
-define
+The subtype of [`IsOrHasDensity`](@ref) provides additional information on the
+relationship between the object and the density (i.e. whether `object`
+itself *is* a density or in what way it *has* a density).
+
+Defaults to `HasNoDensity`. For types that directly represent densities, define
 
 ```julia
-@inline hasdensity(::MyDensityType) = true
+@inline densitykind(::MyDensityType) = IsDensity
 ```
 
-See also [`ismeasure`](@ref) and [`isdensity`](@ref).
+For other types that are associated with a densitiy (e.g. measure types) use
+other appropriate subtypes (defined outside of `DensityInterface`) of
+`IsOrHasDensity` (instead of `IsDensity`).
 """
-function hasdensity end
-export hasdensity
+function densitykind end
+export densitykind
 
-@inline hasdensity(object) = ismeasure(object)
+@inline densitykind(object) = HasNoDensity
 
-function check_hasdensity(d)
-    hasdensity(d) || throw(ArgumentError("Object of type $(typeof(d)) is not compatible with DensityInterface"))
+
+function _check_is_or_has_density(object)
+    densitykind(object) <: IsOrHasDensity || throw(ArgumentError("Object of type $(typeof(object)) neither is nor has a density"))
 end
 
 
 """
-    isdensity(object) = hasdensity(object) && !ismeasure(object)
+    logdensityof(object, x)::Real
 
-Return `true` if `object` is a density. Defaults to
-`hasdensity(object) && !ismeasure(object)`.
-
-!!ToDo: More text!!
-
-`isdensity` should *not* be specialized, specialize [`ismeasure`](@ref) instead.
-
-See also [`hasdensity`](@ref).
-"""
-function isdensity end
-export isdensity
-
-@inline isdensity(object) = hasdensity(object) && !ismeasure(object)
-
-
-"""
-    basemeasure(m)
-
-Return the base measure of measure `m`.
-
-`logdensityof(m, x)` and `densityof(m, x)` return the log/non-log
-Radon–Nikodym derivative of `m` with respect to `basemeasure(m)` evaluated at `x`.
-
-!!ToDo: More text!!
-"""
-function basemeasure end
-export basemeasure
-
-
-"""
-    logdensityof(d, x)::Real
-
-Compute the logarithmic value of density `d` or it's associated density
+Compute the logarithmic value of the density `object` (resp. it's associated density)
 at a given point `x`.
 
 ```jldoctest a
-julia> hasdensity(d)
-true
+julia> densitykind(object)
+IsDensity
 
-julia> logy = logdensityof(d, x); logy isa Real
+julia> logy = logdensityof(object, x); logy isa Real
 true
 ```
 
-See also [`hasdensity`](@ref) and [`densityof`](@ref).
+See also [`densitykind`](@ref) and [`densityof`](@ref).
 """
 function logdensityof end
 export logdensityof
 
 """
-    logdensityof(d)
+    logdensityof(object)
 
-Return a function that computes the logarithmic value of density `d`
-or its associated density at a given point.
+Return a function that computes the logarithmic value of the density `object`
+(resp. it's associated density) at a given point.
 
 ```jldoctest a
-julia> log_f = logdensityof(d); log_f isa Function
+julia> log_f = logdensityof(object); log_f isa Function
 true
 
-julia> log_f(x) == logdensityof(d, x)
+julia> log_f(x) == logdensityof(object, x)
 true
 ```
 
-`logdensityof(d)` defaults to `Base.Fix1(logdensityof, d)`, but may be
+`logdensityof(object)` defaults to `Base.Fix1(logdensityof, object)`, but may be
 specialized. If so, [`logfuncdensity`](@ref) will typically have to be
 specialized for the return type of `logdensityof` as well.
 
 [`logfuncdensity`](@ref) is the inverse of `logdensityof`, so
-`logfuncdensity(log_f)` must be equivalent to `d`.
+`logfuncdensity(log_f)` must be equivalent to `object`.
 """
-function logdensityof(d)
-    check_hasdensity(d)
-    Base.Fix1(logdensityof, d)
+function logdensityof(object)
+    _check_is_or_has_density(object)
+    Base.Fix1(logdensityof, object)
 end
 
 
 """
-    densityof(d, x)::Real
+    densityof(object, x)::Real
 
-Compute the value of density `d` or its associated density at a given point
-`x`.
-
+Compute the value of the density `object` (resp. it's associated density)
+at a given point `x`.
+    
 ```jldoctest a
-julia> hasdensity(d)
-true
+julia> densitykind(object)
+IsDensity
 
-julia> densityof(d, x) == exp(logdensityof(d, x))
+julia> densityof(object, x) == exp(logdensityof(object, x))
 true
 ```
 
-`densityof(d, x)` defaults to `exp(logdensityof(d, x))`, but
+`densityof(object, x)` defaults to `exp(logdensityof(object, x))`, but
 may be specialized.
 
-See also [`hasdensity`](@ref) and [`logdensityof`](@ref).
+See also [`densitykind`](@ref) and [`densityof`](@ref).
 """
-densityof(d, x) = exp(logdensityof(d, x))
+densityof(object, x) = exp(logdensityof(object, x))
 export densityof
 
 """
-    densityof(d)
+    densityof(object)
 
-Return a function that computes the value of density `d` or its associated
-density at a given point.
-
+Return a function that computes the value of the density `object`
+(resp. it's associated density) at a given point.
+        
 ```jldoctest a
-julia> f = densityof(d);
+julia> f = densityof(object);
 
-julia> f(x) == densityof(d, x)
+julia> f(x) == densityof(object, x)
 true
 ```
 
-`densityof(d)` defaults to `Base.Fix1(densityof, d)`, but may be specialized.
+`densityof(object)` defaults to `Base.Fix1(densityof, object)`, but may be specialized.
 """
-function densityof(d)
-    check_hasdensity(d)
-    Base.Fix1(densityof, d)
+function densityof(object)
+    _check_is_or_has_density(object)
+    Base.Fix1(densityof, object)
 end
 
 
@@ -183,12 +175,12 @@ Return a `DensityInterface`-compatible density that is defined by a given
 log-density function `log_f`:
 
 ```jldoctest
-julia> d = logfuncdensity(log_f);
+julia> object = logfuncdensity(log_f);
 
-julia> hasdensity(d) == true
-true
+julia> densitykind(object)
+IsDensity
 
-julia> logdensityof(d, x) == log_f(x)
+julia> logdensityof(object, x) == log_f(x)
 true
 ```
 
@@ -201,24 +193,25 @@ specialized for the return type of `logfuncdensity` as well.
 hold true:
 
 * `logfuncdensity(logdensityof(object))` is equivalent to `object` in respect to `logdensityof`.
-  However, it may not be equal to `object`, especially if `ismeasure(object) == true`:
-  `logfuncdensity` always creates a density, never a measure.
+  However, it may not be equal to `object`, especially if `!(densitykind(object) <: IsDensity)`:
+  `logfuncdensity` always creates something that *is* density, never something that just *has*
+  a density in some way (like a distribution or a measure in general).
 * `logdensityof(logfuncdensity(log_f))` is equivalent  (often equal or even
   identical to) to `log_f`.
 
-See also [`hasdensity`](@ref).
+See also [`densitykind`](@ref).
 """
 function logfuncdensity end
 export logfuncdensity
 
 @inline logfuncdensity(log_f) = LogFuncDensity(log_f)
 
-# For functions stemming from measures create a density, not a measure:
-@inline _logfuncdensity_impl(::Val{true}, log_f::Base.Fix1{typeof(logdensityof)}) = LogFuncDensity(log_f)
-# For functions stemming from densities recover original density:
-@inline _logfuncdensity_impl(::Val{false}, log_f::Base.Fix1{typeof(logdensityof)}) = log_f.x
+# For functions stemming from objects that are *not* densities, create a new density:
+@inline _logfuncdensity_impl(::Type{<:IsOrHasDensity}, log_f::Base.Fix1{typeof(logdensityof)}) = LogFuncDensity(log_f)
+# For functions stemming from objects that *are* densities recover original object:
+@inline _logfuncdensity_impl(::Type{<:IsDensity}, log_f::Base.Fix1{typeof(logdensityof)}) = log_f.x
 
-@inline logfuncdensity(log_f::Base.Fix1{typeof(logdensityof)}) = _logfuncdensity_impl(Val(ismeasure(log_f.x)), log_f)
+@inline logfuncdensity(log_f::Base.Fix1{typeof(logdensityof)}) = _logfuncdensity_impl(densitykind(log_f.x), log_f)
 
 InverseFunctions.inverse(::typeof(logfuncdensity)) = logdensityof
 InverseFunctions.inverse(::typeof(logdensityof)) = logfuncdensity
@@ -236,17 +229,17 @@ struct LogFuncDensity{F}
 end
 LogFuncDensity
 
-@inline hasdensity(::LogFuncDensity) = true
+@inline densitykind(::LogFuncDensity) = IsDensity
 
-@inline logdensityof(d::LogFuncDensity, x) = d._log_f(x)
-@inline logdensityof(d::LogFuncDensity) = d._log_f
+@inline logdensityof(object::LogFuncDensity, x) = object._log_f(x)
+@inline logdensityof(object::LogFuncDensity) = object._log_f
 
-@inline densityof(d::LogFuncDensity, x) = exp(d._log_f(x))
-@inline densityof(d::LogFuncDensity) = exp ∘ d._log_f
+@inline densityof(object::LogFuncDensity, x) = exp(object._log_f(x))
+@inline densityof(object::LogFuncDensity) = exp ∘ object._log_f
 
-function Base.show(io::IO, d::LogFuncDensity)
-    print(io, nameof(typeof(d)), "(")
-    show(io, d._log_f)
+function Base.show(io::IO, object::LogFuncDensity)
+    print(io, nameof(typeof(object)), "(")
+    show(io, object._log_f)
     print(io, ")")
 end
 
@@ -259,12 +252,12 @@ Return a `DensityInterface`-compatible density that is defined by a given
 non-log density function `f`:
 
 ```jldoctest
-julia> d = funcdensity(f);
+julia> object = funcdensity(f);
 
-julia> hasdensity(d) == true
-true
+julia> densitykind(object)
+IsDensity
 
-julia> densityof(d, x) == f(x)
+julia> densityof(object, x) == f(x)
 true
 ```
 
@@ -277,24 +270,25 @@ specialized for the return type of `funcdensity` as well.
 hold true:
 
 * `funcdensity(densityof(object))` is equivalent to `object` in respect to `densityof`.
-  However, it may not be equal to `object`, especially if `ismeasure(object) == true`:
-  `funcdensity` always creates a density, never a measure.
-* `densityof(funcdensity(f))` is equivalent (often equal or even
+  However, it may not be equal to `object`, especially if `!(densitykind(object) <: IsDensity)`:
+  `funcdensity` always creates something that *is* density, never something that just *has*
+  a density in some way (like a distribution or a measure in general).
+* `densityof(funcdensity(f))` is equivalent  (often equal or even
   identical to) to `f`.
 
-See also [`hasdensity`](@ref).
+See also [`densitykind`](@ref).
 """
 function funcdensity end
 export funcdensity
 
 @inline funcdensity(f) = FuncDensity(f)
 
-# For functions stemming from measures, create a density (not a measure):
-@inline _funcdensity_impl(::Val{true}, f::Base.Fix1{typeof(densityof)}) = FuncDensity(f)
-# For functions stemming from densities, recover original density:
-@inline _funcdensity_impl(::Val{false}, f::Base.Fix1{typeof(densityof)}) = f.x
+# For functions stemming from objects that are *not* densities, create a new density:
+@inline _funcdensity_impl(::Type{<:IsOrHasDensity}, f::Base.Fix1{typeof(densityof)}) = FuncDensity(f)
+# For functions stemming from objects that *are* densities recover original object:
+@inline _funcdensity_impl(::Type{<:IsDensity}, f::Base.Fix1{typeof(densityof)}) = f.x
 
-@inline funcdensity(f::Base.Fix1{typeof(densityof)}) = _funcdensity_impl(Val(ismeasure(f.x)), f)
+@inline funcdensity(f::Base.Fix1{typeof(densityof)}) = _funcdensity_impl(densitykind(f.x), f)
 
 InverseFunctions.inverse(::typeof(funcdensity)) = densityof
 InverseFunctions.inverse(::typeof(densityof)) = funcdensity
@@ -312,16 +306,16 @@ struct FuncDensity{F}
 end
 FuncDensity
 
-@inline hasdensity(::FuncDensity) = true
+@inline densitykind(::FuncDensity) = IsDensity
 
-@inline logdensityof(d::FuncDensity, x) = log(d._f(x))
-@inline logdensityof(d::FuncDensity) = log ∘ d._f
+@inline logdensityof(object::FuncDensity, x) = log(object._f(x))
+@inline logdensityof(object::FuncDensity) = log ∘ object._f
 
-@inline densityof(d::FuncDensity, x) = d._f(x)
-@inline densityof(d::FuncDensity) = d._f
+@inline densityof(object::FuncDensity, x) = object._f(x)
+@inline densityof(object::FuncDensity) = object._f
 
-function Base.show(io::IO, d::FuncDensity)
-    print(io, nameof(typeof(d)), "(")
-    show(io, d._f)
+function Base.show(io::IO, object::FuncDensity)
+    print(io, nameof(typeof(object)), "(")
+    show(io, object._f)
     print(io, ")")
 end

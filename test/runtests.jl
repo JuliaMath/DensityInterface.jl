@@ -13,9 +13,9 @@ Test.@testset "Package DensityInterface" begin
         :DocTestSetup,
         quote
             using DensityInterface
-            d = logfuncdensity(x -> x^2)
-            log_f = logdensityof(d)
-            f = densityof(d)
+            object = logfuncdensity(x -> x^2)
+            log_f = logdensityof(object)
+            f = densityof(object)
             x = 4.2
         end;
             recursive=true,
