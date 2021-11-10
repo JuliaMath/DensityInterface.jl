@@ -78,7 +78,7 @@ export isdensity
 Return the base measure of measure `m`.
 
 `logdensityof(m, x)` and `densityof(m, x)` return the log/non-log
-value of the Radon–Nikodym derivative of `m` and `basemeasure(m)`.
+Radon–Nikodym derivative of `m` with respect to `basemeasure(m)` evaluated at `x`.
 
 !!ToDo: More text!!
 """
