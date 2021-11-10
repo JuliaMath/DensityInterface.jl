@@ -15,6 +15,7 @@ Test.@testset "Package DensityInterface" begin
             using DensityInterface
             d = logfuncdensity(x -> x^2)
             log_f = logdensityof(d)
+            f = densityof(d)
             x = 4.2
         end;
             recursive=true,

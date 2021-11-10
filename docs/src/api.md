@@ -4,18 +4,22 @@
 
 ```@docs
 hasdensity
+ismeasure
+basemeasure
+isdensity
 logdensityof
 logdensityof(::Any)
 logfuncdensity
+funcdensity
 densityof
 densityof(::Any)
 ```
-
 
 ## Types
 
 ```@docs
 DensityInterface.LogFuncDensity
+DensityInterface.FuncDensity
 ```
 
 ## Test utility
