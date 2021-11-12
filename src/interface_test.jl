@@ -20,7 +20,7 @@ function test_density_interface(object, x, ref_logd_at_x; kwargs...)
     @testset "test_density_interface: $object with input $x" begin
         ref_d_at_x = exp(ref_logd_at_x)
 
-        @test densitykind(object) <: IsOrHasDensity
+        @test densitykind(object) isa IsOrHasDensity
 
         @test isapprox(logdensityof(object, x), ref_logd_at_x; kwargs...)
         log_f = logdensityof(object)
@@ -31,7 +31,7 @@ function test_density_interface(object, x, ref_logd_at_x; kwargs...)
         @test isapprox(f(x), ref_d_at_x; kwargs...)
 
         for object2 in (logfuncdensity(log_f), funcdensity(f))
-            @test densitykind(object2) <: IsDensity
+            @test densitykind(object2) == IsDensity()
             @test isapprox(logdensityof(object2, x), ref_logd_at_x; kwargs...)
             @test isapprox(logdensityof(object2)(x), ref_logd_at_x; kwargs...)
             @test isapprox(densityof(object2,x), ref_d_at_x; kwargs...)
