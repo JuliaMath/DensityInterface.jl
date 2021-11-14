@@ -3,7 +3,8 @@
 ## Interface
 
 ```@docs
-densitykind
+isdensity
+hasdensity
 logdensityof
 logdensityof(::Any)
 logfuncdensity
@@ -15,10 +16,6 @@ densityof(::Any)
 ## Types
 
 ```@docs
-DensityKind
-HasNoDensity
-IsOrHasDensity
-IsDensity
 DensityInterface.LogFuncDensity
 DensityInterface.FuncDensity
 ```

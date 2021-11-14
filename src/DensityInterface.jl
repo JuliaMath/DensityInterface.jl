@@ -3,7 +3,8 @@
 """
     DensityInterface
 
-Trait-based interface for mathematical/statistical densities
+Trait-based interface for mathematical/statistical densities and objects
+associated with a density.
 """
 module DensityInterface
 
