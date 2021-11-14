@@ -27,7 +27,6 @@ DensityInterface.logdensityof(::MyMeasure, x::Any) = -norm(x)^2
     for object1 in (MyDensity(), MyMeasure())
         x = [1, 2, 3]
 
-        object1 = MyDensity()
         DensityInterface.test_density_interface(object1, x, -norm(x)^2)
 
         object2 = logfuncdensity(x -> -norm(x)^2)
