@@ -2,9 +2,33 @@
 
 
 """
-    hasdensity(object)::Bool
+    isdensity(d)::Bool
 
 Return `true` if `d` is a density.
+
+`isdensity(d) == true` means that `d` itself is/represents a density. It also
+implies that the value of the density `d` at given points can be calculated
+via [`logdensityof`](@ref) and [`densityof`](@ref).
+
+Defaults to `false`. For types that are/represent a density, define
+
+```julia
+@inline isdensity(::MyType) = true
+```
+
+`isdensity` and [`hasdensity`](@ref) *must not* both return true for the
+same object.
+"""
+function isdensity end
+export isdensity
+
+@inline isdensity(::Any) = false
+
+
+"""
+    hasdensity(object)::Bool
+
+Return `true` if `d` has a density.
 
 `hasdensity(object) == true` means that `d` can be said to have an associated
 density. It also implies that the value of that density at given points can
@@ -24,30 +48,6 @@ function hasdensity end
 export hasdensity
 
 @inline hasdensity(::Any) = false
-
-
-"""
-    isdensity(d)::Bool
-
-Return `true` if `d` has a density.
-
-`isdensity(d) == true` means that `d` itself is/represents a density. It also
-implies that the value of the density `d` at given points can be calculated
-via [`logdensityof`](@ref) and [`densityof`](@ref).
-
-Defaults to `false`. For types that are/represent a density, define
-
-```julia
-@inline isdensity(::MyType) = true
-```
-
-`isdensity` and [`hasdensity`](@ref) *must not* both return true for the
-same object.
-"""
-function isdensity end
-export isdensity
-
-@inline isdensity(::Any) = false
 
 
 function _check_is_or_has_density(d)
