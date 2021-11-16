@@ -56,7 +56,7 @@ Reversely, a given log-density function `log_f` can be converted to a DensityInt
 
 ```julia
 object = logfuncdensity(log_f)
-DensityKind(object) == IsDensity() && logdensityof(object, x) == log_f(x)
+DensityKind(object) === IsDensity() && logdensityof(object, x) == log_f(x)
 
 # output
 
