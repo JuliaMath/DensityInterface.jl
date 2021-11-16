@@ -12,14 +12,14 @@ end
 DensityInterface
 ```
 
-This package defines an interface for mathematical/statistical densities and objects associated with a density in Julia. The interface comprises the functions [`isdensity`](@ref), [`hasdensity`](@ref), [`logdensityof`](@ref)/[`densityof`](@ref)[^1] and [`logfuncdensity`](@ref)/[`funcdensity`](@ref).
+This package defines an interface for mathematical/statistical densities and objects associated with a density in Julia. The interface comprises the functions [`densitykind`](@ref),  [`logdensityof`](@ref)/[`densityof`](@ref)[^1] and [`logfuncdensity`](@ref)/[`funcdensity`](@ref).
 
-The following methods must be provided to make a density type (e.g. `SomeDensity`) compatible with the interface:
+The following methods must be provided to make a type (e.g. `SomeDensity`) compatible with the interface:
 
 ```jldoctest a
 import DensityInterface
 
-@inline DensityInterface.isdensity(::SomeDensity) = true
+@inline DensityInterface.densitykind(::SomeDensity) = IsDensity()
 DensityInterface.logdensityof(object::SomeDensity, x) = log_of_d_at(x)
 
 object = SomeDensity()
@@ -30,7 +30,7 @@ DensityInterface.logdensityof(object, x) isa Real
 true
 ```
 
-`object` may be/represent a density itself (`isdensity(object) == true`) or it may be something that can be said to have a density (`hasdensity(object) == true`)[^2].
+`object` may be/represent a density itself (`densitykind(object) == IsDensity()`) or it may be something that can be said to have a density (`densitykind(object) == HasDensity()`)[^2].
 
 In statistical inference applications, for example, `object` might be a likelihood, prior or posterior.
 
@@ -56,7 +56,7 @@ Reversely, a given log-density function `log_f` can be converted to a DensityInt
 
 ```julia
 object = logfuncdensity(log_f)
-isdensity(object) == true && logdensityof(object, x) == log_f(x)
+densitykind(object) == IsDensity() && logdensityof(object, x) == log_f(x)
 
 # output
 

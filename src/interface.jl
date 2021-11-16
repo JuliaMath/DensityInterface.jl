@@ -2,56 +2,104 @@
 
 
 """
-    isdensity(d)::Bool
+    struct IsDensity end
 
-Return `true` if `d` is a density.
+As a return value of [`densitykind(object)`](@ref), indicates that
+`object` *is* (represents) a density, like a probability density
+object.
 
-`isdensity(d) == true` means that `d` itself is/represents a density. It also
-implies that the value of the density `d` at given points can be calculated
-via [`logdensityof`](@ref) and [`densityof`](@ref).
+See also [`logdensityof`](@ref) and [`densityof`](@ref).
+"""
+struct IsDensity end
+export IsDensity
 
-Defaults to `false`. For types that are/represent a density, define
+"""
+    struct HasDensity end
+
+As a return value of [`densitykind(object)`](@ref), indicates that
+`object` *has* a density, like a probability distribution has
+a probability density.
+
+See also [`logdensityof`](@ref) and [`densityof`](@ref).
+"""
+struct HasDensity end
+export HasDensity
+
+"""
+    IsOrHasDensity = Union{IsDensity, HasDensity}
+
+As a return value of [`densitykind(object)`](@ref), indicates that `object`
+either *is* or *has* a density, as understood by `DensityInterface`.
+
+See also [`IsDensity`](@ref) and [`IsDensity`](@ref).
+"""
+const IsOrHasDensity = Union{IsDensity, HasDensity}
+export IsOrHasDensity
+
+"""
+    struct NoDensity end
+
+As a return value of [`densitykind(object)`](@ref), indicates that
+`object` *is not* and *does not have* a density, as understood by
+`DensityInterface`.
+"""
+struct NoDensity end
+export NoDensity
+
+"""
+    DensityKind = Union{IsOrHasDensity, NoDensity}
+
+As a return value of [`densitykind(object)`](@ref), indicates that
+`object` is, resp. has, a density or that `object` is not
+associated with a density.
+
+See also [`IsOrHasDensity`](@ref) and [`NoDensity`](@ref).
+"""
+const DensityKind = Union{IsOrHasDensity, NoDensity}
+export DensityKind
+
+
+"""
+    densitykind(object)::DensityKind
+
+Tell if `object` *is* a density or if it *has* a density, in the sense of the
+`DensityInterface` API, or if is *not* associated with a density.
+    
+Return either `IsDensity()`, `HasDensity()` or `NoDensity()`
+
+In addition to [`IsDensity`](@ref), [`HasDensity`](@ref) or [`NoDensity`](@ref),
+two unions
+
+* `IsOrHasDensity = Union{IsDensity, HasDensity}`
+* `DensityKind = Union{IsOrHasDensity, NoDensity}`
+
+are defined for convenience. `densitykind(object) isa IsOrHasDensity` implies
+that `object` is either a density itself or can be said to have an associated
+density. It also implies that the value of that density at given points can be
+calculated via [`logdensityof`](@ref) and [`densityof`](@ref).
+
+Defaults to `NoDensity()`. For a type that *is* (directly represents)
+a density, like a probability density, define
 
 ```julia
-@inline isdensity(::MyType) = true
+@inline densitykind(::MyDensityType) = IsDensity()
 ```
 
-`isdensity` and [`hasdensity`](@ref) *must not* both return true for the
-same object.
-"""
-function isdensity end
-export isdensity
-
-@inline isdensity(::Any) = false
-
-
-"""
-    hasdensity(object)::Bool
-
-Return `true` if `d` has a density.
-
-`hasdensity(object) == true` means that `d` can be said to have an associated
-density. It also implies that the value of that density at given points can
-be calculated via [`logdensityof`](@ref) and [`densityof`](@ref).
-```
-
-Defaults to `false`. For types that can be said to have a density, define
+For a type that *has* (is associated with) a density in some way, like
+a probability distribution has a probability density, define
 
 ```julia
-@inline hasdensity(::MyType) = true
+@inline densitykind(::MyDensityType) = HasDensity()
 ```
-
-`hasdensity` and [`isdensity`](@ref) *must not* both return true for the
-same object.
 """
-function hasdensity end
-export hasdensity
+function densitykind end
+export densitykind
 
-@inline hasdensity(::Any) = false
+@inline densitykind(object) = NoDensity()
 
 
-function _check_is_or_has_density(d)
-    (isdensity(d) ⊻ hasdensity(d)) || throw(ArgumentError("Object of type $(typeof(d)) is not compatible with DensityInterface"))
+function _check_is_or_has_density(object)
+    densitykind(object) isa IsOrHasDensity || throw(ArgumentError("Object of type $(typeof(object)) neither is nor has a density"))
 end
 
 
@@ -62,14 +110,14 @@ Compute the logarithmic value of the density `object` (resp. its associated dens
 at a given point `x`.
 
 ```jldoctest a
-julia> isdensity(object) ⊻ hasdensity(object)
-true
+julia> densitykind(object)
+IsDensity()
 
 julia> logy = logdensityof(object, x); logy isa Real
 true
 ```
 
-See also [`isdensity`](@ref), [`hasdensity`](@ref) and [`densityof`](@ref).
+See also [`densitykind`](@ref) and [`densityof`](@ref).
 """
 function logdensityof end
 export logdensityof
@@ -108,8 +156,8 @@ Compute the value of the density `object` (resp. its associated density)
 at a given point `x`.
     
 ```jldoctest a
-julia> isdensity(object) ⊻ hasdensity(object)
-true
+julia> densitykind(object)
+IsDensity()
 
 julia> densityof(object, x) == exp(logdensityof(object, x))
 true
@@ -118,7 +166,7 @@ true
 `densityof(object, x)` defaults to `exp(logdensityof(object, x))`, but
 may be specialized.
 
-See also [`isdensity`](@ref), [`hasdensity`](@ref) and [`densityof`](@ref).
+See also [`densitykind`](@ref) and [`densityof`](@ref).
 """
 densityof(object, x) = exp(logdensityof(object, x))
 export densityof
@@ -154,8 +202,8 @@ log-density function `log_f`:
 ```jldoctest
 julia> object = logfuncdensity(log_f);
 
-julia> isdensity(object)
-true
+julia> densitykind(object)
+IsDensity()
 
 julia> logdensityof(object, x) == log_f(x)
 true
@@ -171,13 +219,13 @@ hold true:
 
 * `d = logfuncdensity(logdensityof(object))` is equivalent to `object` in
   respect to `logdensityof` and `densityof`. However, `d` may not be equal to
-  `object`, especially if `hasdensity(object)`: `logfuncdensity` always
+  `object`, especially if `densitykind(object) == HasDensity()`: `logfuncdensity` always
   creates something that *is* density, never something that just *has*
   a density in some way (like a distribution or a measure in general).
 * `logdensityof(logfuncdensity(log_f))` is equivalent (typically equal or even
   identical to) to `log_f`.
 
-See also [`isdensity`](@ref) and  [`hasdensity`](@ref).
+See also [`densitykind`](@ref).
 """
 function logfuncdensity end
 export logfuncdensity
@@ -185,11 +233,11 @@ export logfuncdensity
 @inline logfuncdensity(log_f) = LogFuncDensity(log_f)
 
 # For functions stemming from objects that *have* a density, create a new density:
-@inline _logfuncdensity_impl(::Val{false}, log_f::Base.Fix1{typeof(logdensityof)}) = LogFuncDensity(log_f)
+@inline _logfuncdensity_impl(::HasDensity, log_f::Base.Fix1{typeof(logdensityof)}) = LogFuncDensity(log_f)
 # For functions stemming from objects that *are* a density, recover original object:
-@inline _logfuncdensity_impl(::Val{true}, log_f::Base.Fix1{typeof(logdensityof)}) = log_f.x
+@inline _logfuncdensity_impl(::IsDensity, log_f::Base.Fix1{typeof(logdensityof)}) = log_f.x
 
-@inline logfuncdensity(log_f::Base.Fix1{typeof(logdensityof)}) = _logfuncdensity_impl(Val(isdensity(log_f.x)), log_f)
+@inline logfuncdensity(log_f::Base.Fix1{typeof(logdensityof)}) = _logfuncdensity_impl(densitykind(log_f.x), log_f)
 
 InverseFunctions.inverse(::typeof(logfuncdensity)) = logdensityof
 InverseFunctions.inverse(::typeof(logdensityof)) = logfuncdensity
@@ -207,7 +255,7 @@ struct LogFuncDensity{F}
 end
 LogFuncDensity
 
-@inline isdensity(::LogFuncDensity) = true
+@inline densitykind(::LogFuncDensity) = IsDensity()
 
 @inline logdensityof(object::LogFuncDensity, x) = object._log_f(x)
 @inline logdensityof(object::LogFuncDensity) = object._log_f
@@ -227,13 +275,13 @@ end
     funcdensity(f)
 
 Return a `DensityInterface`-compatible density that is defined by a given
--density function `f`:
+non-log density function `f`:
 
 ```jldoctest
 julia> object = funcdensity(f);
 
-julia> isdensity(object)
-true
+julia> densitykind(object)
+IsDensity()
 
 julia> densityof(object, x) == f(x)
 true
@@ -249,13 +297,13 @@ hold true:
 
 * `d = funcdensity(densityof(object))` is equivalent to `object` in
   respect to `logdensityof` and `densityof`. However, `d` may not be equal to
-  `object`, especially if `hasdensity(object)`: `funcdensity` always
+  `object`, especially if `densitykind(object) == HasDensity()`: `funcdensity` always
   creates something that *is* density, never something that just *has*
   a density in some way (like a distribution or a measure in general).
 * `densityof(funcdensity(f))` is equivalent (typically equal or even
   identical to) to `f`.
 
-See also [`isdensity`](@ref) and  [`hasdensity`](@ref).
+See also [`densitykind`](@ref).
 """
 function funcdensity end
 export funcdensity
@@ -263,11 +311,11 @@ export funcdensity
 @inline funcdensity(f) = FuncDensity(f)
 
 # For functions stemming from objects that *have* a density, create a new density:
-@inline _funcdensity_impl(::Val{false}, f::Base.Fix1{typeof(densityof)}) = FuncDensity(f)
+@inline _funcdensity_impl(::HasDensity, f::Base.Fix1{typeof(densityof)}) = FuncDensity(f)
 # For functions stemming from objects that *are* a density, recover original object:
-@inline _funcdensity_impl(::Val{true}, f::Base.Fix1{typeof(densityof)}) = f.x
+@inline _funcdensity_impl(::IsDensity, f::Base.Fix1{typeof(densityof)}) = f.x
 
-@inline funcdensity(f::Base.Fix1{typeof(densityof)}) = _funcdensity_impl(Val(isdensity(f.x)), f)
+@inline funcdensity(f::Base.Fix1{typeof(densityof)}) = _funcdensity_impl(densitykind(f.x), f)
 
 InverseFunctions.inverse(::typeof(funcdensity)) = densityof
 InverseFunctions.inverse(::typeof(densityof)) = funcdensity
@@ -285,7 +333,7 @@ struct FuncDensity{F}
 end
 FuncDensity
 
-@inline isdensity(::FuncDensity) = true
+@inline densitykind(::FuncDensity) = IsDensity()
 
 @inline logdensityof(object::FuncDensity, x) = log(object._f(x))
 @inline logdensityof(object::FuncDensity) = log ∘ object._f

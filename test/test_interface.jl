@@ -6,11 +6,11 @@ using Test
 using LinearAlgebra, InverseFunctions
 
 struct MyDensity end
-@inline DensityInterface.isdensity(::MyDensity) = true
+@inline DensityInterface.densitykind(::MyDensity) = IsDensity()
 DensityInterface.logdensityof(::MyDensity, x::Any) = -norm(x)^2
 
 struct MyMeasure end
-@inline DensityInterface.hasdensity(::MyMeasure) = true
+@inline DensityInterface.densitykind(::MyMeasure) = HasDensity()
 DensityInterface.logdensityof(::MyMeasure, x::Any) = -norm(x)^2
 
 @testset "interface" begin
@@ -19,8 +19,7 @@ DensityInterface.logdensityof(::MyMeasure, x::Any) = -norm(x)^2
     @test inverse(densityof) == funcdensity
     @test inverse(funcdensity) == densityof
 
-    @test @inferred(isdensity("foo")) == false
-    @test @inferred(hasdensity("foo")) == false
+    @test @inferred(densitykind("foo")) == NoDensity()
     @test_throws ArgumentError logdensityof("foo")
     @test_throws ArgumentError densityof("foo")
 
@@ -30,11 +29,11 @@ DensityInterface.logdensityof(::MyMeasure, x::Any) = -norm(x)^2
         DensityInterface.test_density_interface(object1, x, -norm(x)^2)
 
         object2 = logfuncdensity(x -> -norm(x)^2)
-        @test isdensity(object2)
+        @test densitykind(object2) == IsDensity()
         DensityInterface.test_density_interface(object2, x, -norm(x)^2)
 
         object3 = funcdensity(x -> exp(-norm(x)^2))
-        @test isdensity(object3)
+        @test densitykind(object3) == IsDensity()
         DensityInterface.test_density_interface(object3, x, -norm(x)^2)
     end
 end
