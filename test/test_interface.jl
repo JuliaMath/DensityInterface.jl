@@ -19,7 +19,7 @@ DensityInterface.logdensityof(::MyMeasure, x::Any) = -norm(x)^2
     @test inverse(densityof) == funcdensity
     @test inverse(funcdensity) == densityof
 
-    @test @inferred(DensityKind("foo")) == NoDensity()
+    @test @inferred(DensityKind("foo")) === NoDensity()
     @test_throws ArgumentError logdensityof("foo")
     @test_throws ArgumentError densityof("foo")
 
