@@ -33,7 +33,7 @@ DensityInterface.logdensityof(::MyMeasure, x::Any) = -norm(x)^2
         DensityInterface.test_density_interface(object2, x, -norm(x)^2)
 
         object3 = funcdensity(x -> exp(-norm(x)^2))
-        @test DensityKind(object3) == IsDensity()
+        @test DensityKind(object3) === IsDensity()
         DensityInterface.test_density_interface(object3, x, -norm(x)^2)
     end
 end
