@@ -58,7 +58,7 @@ end
 """
     logdensityof(object, x)::Real
 
-Compute the logarithmic value of the density `object` (resp. it's associated density)
+Compute the logarithmic value of the density `object` (resp. its associated density)
 at a given point `x`.
 
 ```jldoctest a
@@ -104,7 +104,7 @@ end
 """
     densityof(object, x)::Real
 
-Compute the value of the density `object` (resp. it's associated density)
+Compute the value of the density `object` (resp. its associated density)
 at a given point `x`.
     
 ```jldoctest a
@@ -127,7 +127,7 @@ export densityof
     densityof(object)
 
 Return a function that computes the value of the density `object`
-(resp. it's associated density) at a given point.
+(resp. its associated density) at a given point.
         
 ```jldoctest a
 julia> f = densityof(object);
