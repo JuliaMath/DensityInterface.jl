@@ -30,7 +30,7 @@ DensityInterface.logdensityof(object, x) isa Real
 true
 ```
 
-`object` may be/represent a density itself (`DensityKind(object) == IsDensity()`) or it may be something that can be said to have a density (`DensityKind(object) == HasDensity()`)[^2].
+`object` may be/represent a density itself (`DensityKind(object) === IsDensity()`) or it may be something that can be said to have a density (`DensityKind(object) === HasDensity()`)[^2].
 
 In statistical inference applications, for example, `object` might be a likelihood, prior or posterior.
 
