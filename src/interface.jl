@@ -65,7 +65,7 @@ a probability density.
 
 See [`DensityKind`](@ref) for details.
 """
-struct HasDensity end
+struct HasDensity <: DensityKind end
 export HasDensity
 
 
