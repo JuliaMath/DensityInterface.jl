@@ -52,7 +52,7 @@ object.
 
 See [`DensityKind`](@ref) for details.
 """
-struct IsDensity end
+struct IsDensity <: DensityKind end
 export IsDensity
 
 
