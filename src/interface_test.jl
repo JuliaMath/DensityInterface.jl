@@ -1,38 +1,45 @@
 # This file is a part of DensityInterface.jl, licensed under the MIT License (MIT).
 
 """
-    DensityInterface.test_density_interface(d, x, ref_logd_at_x; kwargs...)
+    DensityInterface.test_density_interface(object, x, ref_logd_at_x; kwargs...)
 
-Test if `d` is compatible with `DensityInterface`.
+Test that `object` is compatible with `DensityInterface`.
 
-Tests that [`logdensityof(d, x)`](@ref) equals `ref_logd_at_x` and
-that the behavior of [`logdensityof(d)`](@ref),
-[`densityof(d, x)`](@ref) and [`densityof(d)`](@ref) is consistent.
+Tests that either `DensityKind(object) isa IsOrHasDensity`.
 
-Also tests if `logfuncdensity(logdensityof(d))` returns
-a density equivalent to `d` in respect to the functions above.
+Also tests that [`logdensityof(object, x)`](@ref) equals `ref_logd_at_x` and
+that the behavior of [`logdensityof(object)`](@ref),
+[`densityof(object, x)`](@ref) and [`densityof(object)`](@ref) is consistent.
 
-The results of `logdensityof(d, x)` and `densityof(d, x)` are compared to
+The results of `logdensityof(object, x)` and `densityof(object, x)` are compared to
 `ref_logd_at_x` and `exp(ref_logd_at_x)` using `isapprox`. `kwargs...` are
 forwarded to `isapprox`.
+
+Also tests that `d = logfuncdensity(logdensityof(object))` returns a density
+(`DensityKind(d) == IsDensity()`) that is equivalent to `object` in respect to
+`logdensityof` and `densityof`, and that `funcdensity(densityof(object))`
+behaves the same way.
 """
-function test_density_interface(d, x, ref_logd_at_x; kwargs...)
-    @testset "test_density_interface: $d with input $x" begin
+function test_density_interface(object, x, ref_logd_at_x; kwargs...)
+    @testset "test_density_interface: $object with input $x" begin
         ref_d_at_x = exp(ref_logd_at_x)
 
-        @test hasdensity(d) == true
-        @test isapprox(logdensityof(d, x), ref_logd_at_x; kwargs...)
-        log_f = logdensityof(d)
-        @test isapprox(log_f(x), ref_logd_at_x; kwargs...)
-        @test isapprox(densityof(d,x), ref_d_at_x; kwargs...)
-        @test isapprox(densityof(d)(x), ref_d_at_x; kwargs...)
+        @test DensityKind(object) isa IsOrHasDensity
 
-        d2 = logfuncdensity(log_f)
-        @test hasdensity(d2) == true
-        @test isapprox(logdensityof(d2, x), ref_logd_at_x; kwargs...)
-        log_f2 = logdensityof(d2)
-        @test isapprox(log_f2(x), ref_logd_at_x; kwargs...)
-        @test isapprox(densityof(d2,x), ref_d_at_x; kwargs...)
-        @test isapprox(densityof(d2)(x), ref_d_at_x; kwargs...)
+        @test isapprox(logdensityof(object, x), ref_logd_at_x; kwargs...)
+        log_f = logdensityof(object)
+        @test isapprox(log_f(x), ref_logd_at_x; kwargs...)
+
+        @test isapprox(densityof(object,x), ref_d_at_x; kwargs...)
+        f = densityof(object)
+        @test isapprox(f(x), ref_d_at_x; kwargs...)
+
+        for d in (logfuncdensity(log_f), funcdensity(f))
+            @test DensityKind(d) == IsDensity()
+            @test isapprox(logdensityof(d, x), ref_logd_at_x; kwargs...)
+            @test isapprox(logdensityof(d)(x), ref_logd_at_x; kwargs...)
+            @test isapprox(densityof(d,x), ref_d_at_x; kwargs...)
+            @test isapprox(densityof(d)(x), ref_d_at_x; kwargs...)
+        end
     end
 end
