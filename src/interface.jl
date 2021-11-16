@@ -78,7 +78,7 @@ As a return value of [`DensityKind(object)`](@ref), indicates that
 
 See [`DensityKind`](@ref) for details.
 """
-struct NoDensity end
+struct NoDensity <: DensityKind end
 export NoDensity
 
 
