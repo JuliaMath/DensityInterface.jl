@@ -5,7 +5,7 @@
 
 Test that `object` is compatible with `DensityInterface`.
 
-Tests that either `densitykind(object) isa IsOrHasDensity`.
+Tests that either `DensityKind(object) isa IsOrHasDensity`.
 
 Also tests that [`logdensityof(object, x)`](@ref) equals `ref_logd_at_x` and
 that the behavior of [`logdensityof(object)`](@ref),
@@ -16,7 +16,7 @@ The results of `logdensityof(object, x)` and `densityof(object, x)` are compared
 forwarded to `isapprox`.
 
 Also tests that `d = logfuncdensity(logdensityof(object))` returns a density
-(`densitykind(d) == IsDensity()`) that is equivalent to `object` in respect to
+(`DensityKind(d) == IsDensity()`) that is equivalent to `object` in respect to
 `logdensityof` and `densityof`, and that `funcdensity(densityof(object))`
 behaves the same way.
 """
@@ -24,7 +24,7 @@ function test_density_interface(object, x, ref_logd_at_x; kwargs...)
     @testset "test_density_interface: $object with input $x" begin
         ref_d_at_x = exp(ref_logd_at_x)
 
-        @test densitykind(object) isa IsOrHasDensity
+        @test DensityKind(object) isa IsOrHasDensity
 
         @test isapprox(logdensityof(object, x), ref_logd_at_x; kwargs...)
         log_f = logdensityof(object)
@@ -35,7 +35,7 @@ function test_density_interface(object, x, ref_logd_at_x; kwargs...)
         @test isapprox(f(x), ref_d_at_x; kwargs...)
 
         for d in (logfuncdensity(log_f), funcdensity(f))
-            @test densitykind(d) == IsDensity()
+            @test DensityKind(d) == IsDensity()
             @test isapprox(logdensityof(d, x), ref_logd_at_x; kwargs...)
             @test isapprox(logdensityof(d)(x), ref_logd_at_x; kwargs...)
             @test isapprox(densityof(d,x), ref_d_at_x; kwargs...)

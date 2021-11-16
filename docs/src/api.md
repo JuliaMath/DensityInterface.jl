@@ -3,7 +3,6 @@
 ## Interface
 
 ```@docs
-densitykind
 logdensityof
 logdensityof(::Any)
 logfuncdensity
