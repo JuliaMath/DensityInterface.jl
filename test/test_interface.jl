@@ -13,6 +13,7 @@ struct MyMeasure end
 @inline DensityInterface.DensityKind(::MyMeasure) = HasDensity()
 DensityInterface.logdensityof(::MyMeasure, x::Any) = -norm(x)^2
 
+
 @testset "interface" begin
     @test inverse(logdensityof) == logfuncdensity
     @test inverse(logfuncdensity) == logdensityof

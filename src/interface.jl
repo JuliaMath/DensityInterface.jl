@@ -342,3 +342,53 @@ function Base.show(io::IO, object::FuncDensity)
     show(io, object._f)
     print(io, ")")
 end
+
+
+@static if VERSION >= v"1.6"
+
+"""
+    LikelihoodDensity{F,O}(f_kernel, obs)
+
+Given a kernel function `f_kernel` that generates a distribution or
+measure in general
+
+```jldoctest ld
+julia> f_kernel(x) = Normal(x, 2.0);
+
+julia> DensityKind(f_kernel(x))
+HasDensity()
+```
+
+and an observation `obs` of such a distribution/measure
+
+```jldoctest ld
+julia> obs = 1.5;
+```
+
+a `LikelihoodDensity` behaves in the following way
+
+```jldoctest ld
+julia> likelihood = LikelihoodDensity(f_kernel, obs)
+LikelihoodDensity(f_kernel, 1.5)
+
+julia> DensityKind(likelihood)
+IsDensity()
+
+julia> logdensityof(likelihood, x) == logdensityof(f_kernel(x), obs)
+true
+```
+"""
+const LikelihoodDensity{F,O} = DensityInterface.LogFuncDensity{ComposedFunction{Base.Fix2{typeof(logdensityof), O}, F}}
+export LikelihoodDensity
+
+LikelihoodDensity(k, x) = logfuncdensity(Base.Fix2(logdensityof, x) ∘ (k))
+
+function Base.show(io::IO, object::LikelihoodDensity)
+    print(io, "LikelihoodDensity(")
+    show(io, logdensityof(object).inner)
+    print(io, ", ")
+    show(io, logdensityof(object).outer.x)
+    print(io, ")")
+end
+
+end # if VERSION >= v"1.6"
