@@ -13,10 +13,18 @@ DocMeta.setdocmeta!(
     :DocTestSetup,
     quote
         using DensityInterface
-        object = logfuncdensity(x -> -x^2)
+        object = logfuncdensity(x -> x^2)
         log_f = logdensityof(object)
         f = densityof(object)
-        x = 4
+        x = 4.2
+
+        struct Normal{T}
+            μ::T
+            σ::T
+        end
+        @inline DensityInterface.DensityKind(::Normal) = HasDensity()
+        DensityInterface.logdensityof(d::Normal, x) = -((x - d.μ)/d.σ)^2/2 - log(d.σ * √(2π))
+
     end;
     recursive=true,
 )

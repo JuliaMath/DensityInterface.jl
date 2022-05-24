@@ -21,6 +21,7 @@ NoDensity
 DensityKind
 DensityInterface.LogFuncDensity
 DensityInterface.FuncDensity
+DensityInterface.LikelihoodDensity
 ```
 
 ## Test utility
