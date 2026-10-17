@@ -36,4 +36,16 @@ DensityInterface.logdensityof(::MyMeasure, x::Any) = -norm(x)^2
         @test DensityKind(object3) === IsDensity()
         DensityInterface.test_density_interface(object3, x, -norm(x)^2)
     end
+
+    # Needs a process that has not loaded Test
+    code = """
+        using DensityInterface
+        try
+            DensityInterface.test_density_interface(1, 1, 1)
+        catch e
+            showerror(stdout, e)
+        end
+        """
+    cmd = `$(Base.julia_cmd()) --startup-file=no --project=$(Base.active_project()) -e $code`
+    @test occursin("run `using Test` first", read(cmd, String))
 end
